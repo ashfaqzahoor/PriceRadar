@@ -25,7 +25,8 @@ export class BaseProvider {
       available: rawProduct.available,
       imageUrl: rawProduct.imageUrl,
       productUrl: rawProduct.productUrl,
-      deliveryEta: rawProduct.deliveryEta
+      deliveryEta: rawProduct.deliveryEta,
+      pincode: rawProduct.pincode || null
     };
   }
 }

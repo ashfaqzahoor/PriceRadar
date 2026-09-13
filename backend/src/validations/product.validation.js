@@ -2,10 +2,12 @@ import { z } from 'zod';
 
 export const searchSchema = z.object({
   query: z.object({
-    q: z.string().min(1).max(80),
+    q: z.string().max(80).default(''),
+    category: z.string().optional(),
+    pincode: z.string().optional(),
     page: z.coerce.number().int().positive().default(1),
-    limit: z.coerce.number().int().positive().max(30).default(12),
-    sort: z.enum(['best', 'price_desc', 'name']).default('best'),
+    limit: z.coerce.number().int().positive().max(50).default(12),
+    sort: z.enum(['best', 'price_desc', 'name', 'unit_price', 'savings']).default('best'),
     provider: z.string().default('all'),
     availableOnly: z.coerce.boolean().default(false)
   }),
@@ -38,6 +40,9 @@ export const productKeyParamSchema = z.object({
   params: z.object({
     productKey: z.string().min(1)
   }),
-  query: z.object({}).passthrough(),
+  query: z.object({
+    pincode: z.string().optional()
+  }).passthrough(),
   body: z.object({}).passthrough()
 });
+

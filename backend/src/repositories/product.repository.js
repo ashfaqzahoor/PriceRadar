@@ -1,10 +1,12 @@
+import mongoose from 'mongoose';
 import { Product } from '../models/Product.js';
 import { Price } from '../models/Price.js';
 import { slugify } from '../utils/helper.js';
+import { logger } from '../config/logger.js';
 
 export const productRepository = {
   async upsertCanonicalProduct(product) {
-    const slug = slugify(`${product.brand || 'generic'}-${product.name}-${product.quantity || ''}`);
+    const slug = product.slug || slugify(`${product.brand || 'generic'}-${product.name}-${product.quantity || ''}`);
     return Product.findOneAndUpdate(
       { slug },
       {
@@ -39,8 +41,33 @@ export const productRepository = {
     );
   },
 
+  async syncComparisonResults(comparisons) {
+    if (!mongoose.connection || mongoose.connection.readyState !== 1) return;
+    try {
+      for (const item of comparisons) {
+        const canonical = await this.upsertCanonicalProduct({
+          name: item.name,
+          brand: item.brand,
+          category: item.category,
+          quantity: item.quantity,
+          imageUrl: item.imageUrl,
+          slug: item.productKey
+        });
+
+        if (canonical?._id && Array.isArray(item.offers)) {
+          await Promise.allSettled(
+            item.offers.map((offer) => this.upsertPrice(canonical._id, offer))
+          );
+        }
+      }
+    } catch (err) {
+      logger.debug(`MongoDB sync skipped: ${err.message}`);
+    }
+  },
+
   search: (query, limit = 8) =>
     Product.find({ $text: { $search: query } }, { score: { $meta: 'textScore' } })
       .sort({ score: { $meta: 'textScore' } })
       .limit(limit)
 };
+
