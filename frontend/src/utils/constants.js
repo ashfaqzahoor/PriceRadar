@@ -25,10 +25,10 @@ export const CATEGORIES = [
 ];
 
 export const POPULAR_LOCATIONS = [
-  { pincode: '110001', city: 'Delhi NCR', area: 'Connaught Place', eta: '9 min' },
-  { pincode: '400001', city: 'Mumbai', area: 'South Mumbai', eta: '10 min' },
-  { pincode: '560001', city: 'Bengaluru', area: 'MG Road / Indiranagar', eta: '10 min' },
-  { pincode: '411001', city: 'Pune', area: 'Camp / Deccan', eta: '14 min' },
-  { pincode: '500001', city: 'Hyderabad', area: 'Banjara Hills', eta: '15 min' }
+  { pincode: '110001', city: 'Delhi NCR', area: 'Connaught Place / Central', eta: '9 min', lat: 28.6315, lon: 77.2167, hubCode: 'DEL_CENTRAL_01' },
+  { pincode: '400001', city: 'Mumbai', area: 'Fort / South Mumbai', eta: '10 min', lat: 18.9388, lon: 72.8354, hubCode: 'BOM_SOUTH_02' },
+  { pincode: '560001', city: 'Bengaluru', area: 'MG Road / Indiranagar', eta: '10 min', lat: 12.9756, lon: 77.6066, hubCode: 'BLR_EAST_04' },
+  { pincode: '411001', city: 'Pune', area: 'Camp / Deccan Gymkhana', eta: '14 min', lat: 18.5196, lon: 73.8732, hubCode: 'PNQ_CENTRAL_01' },
+  { pincode: '500001', city: 'Hyderabad', area: 'Banjara Hills / Abids', eta: '15 min', lat: 17.3984, lon: 78.4735, hubCode: 'HYD_CORE_03' }
 ];
 

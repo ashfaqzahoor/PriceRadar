@@ -8,6 +8,7 @@ import { Profile } from '../pages/Profile.jsx';
 import { Register } from '../pages/Register.jsx';
 import { SearchResults } from '../pages/SearchResults.jsx';
 import { Wishlist } from '../pages/Wishlist.jsx';
+import { BasketPage } from '../pages/BasketPage.jsx';
 import { useAuth } from '../hooks/useAuth.js';
 
 function ProtectedRoute({ children }) {
@@ -22,6 +23,7 @@ export function AppRoutes() {
         <Route path="/" element={<Home />} />
         <Route path="/search" element={<SearchResults />} />
         <Route path="/products/:productKey" element={<ProductDetails />} />
+        <Route path="/basket" element={<BasketPage />} />
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />

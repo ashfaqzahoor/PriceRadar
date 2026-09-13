@@ -19,34 +19,55 @@ export function Login() {
   };
 
   return (
-    <AuthShell title="Login">
-      <form onSubmit={submit} className="space-y-4">
-        <Field label="Email" type="email" value={form.email} onChange={(email) => setForm({ ...form, email })} />
-        <Field label="Password" type="password" value={form.password} onChange={(password) => setForm({ ...form, password })} />
-        {error && <p className="text-sm text-coral">{error}</p>}
-        <button disabled={loading} className="w-full rounded-lg bg-ink px-4 py-3 font-semibold text-white disabled:opacity-60">Login</button>
-        <p className="text-center text-sm text-muted">New here? <Link className="font-semibold text-mint" to="/register">Create account</Link></p>
-      </form>
-    </AuthShell>
-  );
-}
+    <div className="mx-auto flex min-h-[70vh] max-w-md items-center justify-center px-4 py-12">
+      <div className="w-full rounded-2xl border border-gray-200 bg-white p-8 shadow-xs">
+        <h1 className="text-xl font-bold text-gray-900 mb-2">Sign in to PriceRadar</h1>
+        <p className="text-xs text-gray-500 mb-6">
+          Access your saved items and sync baskets across your devices.
+        </p>
 
-function AuthShell({ title, children }) {
-  return (
-    <div className="mx-auto grid min-h-[70vh] max-w-md place-items-center px-4 py-10">
-      <div className="w-full rounded-lg border border-line bg-white p-6 shadow-soft">
-        <h1 className="mb-5 text-2xl font-semibold text-ink">{title}</h1>
-        {children}
+        <form onSubmit={submit} className="space-y-4 text-xs">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Email address</label>
+            <input
+              type="email"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              required
+              placeholder="you@example.com"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Password</label>
+            <input
+              type="password"
+              value={form.password}
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
+              required
+              placeholder="••••••••"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 outline-none focus:border-green-600 focus:ring-2 focus:ring-green-600/20"
+            />
+          </div>
+
+          {error && <p className="text-xs text-red-600 font-medium">{error}</p>}
+
+          <button
+            disabled={loading}
+            className="w-full rounded-lg bg-green-700 py-2.5 text-sm font-medium text-white hover:bg-green-800 transition-colors disabled:opacity-50 shadow-xs"
+          >
+            {loading ? 'Signing in...' : 'Sign In'}
+          </button>
+
+          <p className="text-center text-xs text-gray-500 pt-2">
+            Don't have an account?{' '}
+            <Link className="font-medium text-green-700 hover:text-green-800" to="/register">
+              Sign up
+            </Link>
+          </p>
+        </form>
       </div>
     </div>
-  );
-}
-
-function Field({ label, type, value, onChange }) {
-  return (
-    <label className="block text-sm">
-      <span className="mb-1 block text-muted">{label}</span>
-      <input type={type} value={value} onChange={(event) => onChange(event.target.value)} required className="w-full rounded-lg border border-line px-3 py-3 outline-none focus:border-mint" />
-    </label>
   );
 }

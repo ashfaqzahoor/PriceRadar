@@ -3,10 +3,10 @@ import { Calendar, Eye, EyeOff, Info, TrendingDown } from 'lucide-react';
 import { formatPrice } from '../../utils/formatPrice.js';
 
 const PROVIDER_CONFIG = {
-  blinkit: { label: 'Blinkit', color: '#059669', stroke: '#059669' },
-  instamart: { label: 'Instamart', color: '#d97706', stroke: '#d97706' },
-  bigbasket: { label: 'BigBasket', color: '#2563eb', stroke: '#2563eb' },
-  groceryapi: { label: 'Grocery API', color: '#7c3aed', stroke: '#7c3aed' }
+  blinkit: { label: 'Blinkit', color: '#EAB308', stroke: '#CA8A04' }, // warm yellow/amber
+  instamart: { label: 'Instamart', color: '#F97316', stroke: '#EA580C' }, // orange
+  bigbasket: { label: 'BigBasket', color: '#16A34A', stroke: '#15803D' }, // green
+  groceryapi: { label: 'Grocery API', color: '#6B7280', stroke: '#4B5563' } // neutral gray
 };
 
 export function PriceTrendChart({ timeline = [], stats = null }) {
@@ -101,29 +101,30 @@ export function PriceTrendChart({ timeline = [], stats = null }) {
   const activePoint = hoveredIndex !== null ? filteredTimeline[hoveredIndex] : null;
 
   return (
-    <div className="rounded-3xl border border-slate-200/90 bg-white p-5 sm:p-6 shadow-xs space-y-4">
-      {/* Header with timeframe tabs and store pills */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="rounded-xl border border-gray-200 bg-white p-5 space-y-4">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <h3 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">Price Trend Tracker</h3>
-            <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-semibold text-slate-600">
-              Live & 30-Day History
+            <Calendar className="h-4 w-4 text-green-700" />
+            <h3 className="font-semibold text-sm text-gray-900">Price History</h3>
+            <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-600">
+              Last {timeRange} days
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-0.5">Track historical price movements and flash deals across stores</p>
+          <p className="text-xs text-gray-500 mt-0.5">Track how prices have trended across stores</p>
         </div>
 
         {/* Time range buttons */}
-        <div className="flex items-center gap-1 rounded-xl bg-slate-100 p-1 self-start sm:self-auto text-xs font-semibold">
+        <div className="flex items-center gap-1 rounded-lg border border-gray-200 bg-gray-50 p-1 self-start sm:self-auto text-xs">
           {[7, 14, 30].map((days) => (
             <button
               key={days}
               onClick={() => setTimeRange(days)}
-              className={`rounded-lg px-3 py-1.5 transition-all ${
+              className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
                 timeRange === days
-                  ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-500 hover:text-slate-900'
+                  ? 'bg-white text-gray-900 shadow-xs'
+                  : 'text-gray-500 hover:text-gray-900'
               }`}
             >
               {days}D
@@ -133,30 +134,30 @@ export function PriceTrendChart({ timeline = [], stats = null }) {
       </div>
 
       {/* Store Toggle Pills */}
-      <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-100 text-xs">
-        <span className="text-[11px] font-semibold uppercase text-slate-400 mr-1">Stores:</span>
+      <div className="flex flex-wrap items-center gap-2 text-xs">
+        <span className="text-xs font-medium text-gray-500 mr-1">Stores:</span>
         {Object.entries(PROVIDER_CONFIG).map(([key, cfg]) => {
           const isVisible = visibleStores[key];
           return (
             <button
               key={key}
               onClick={() => toggleStore(key)}
-              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-xs font-medium transition-all ${
+              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-medium transition-colors ${
                 isVisible
-                  ? 'border-slate-200/90 bg-slate-50 text-slate-800 shadow-xs'
-                  : 'border-dashed border-slate-200 text-slate-400 opacity-50 hover:opacity-80'
+                  ? 'border-gray-300 bg-white text-gray-800 shadow-xs'
+                  : 'border-gray-200 bg-gray-50 text-gray-400 opacity-60'
               }`}
             >
-              <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: cfg.color }} />
+              <span className="h-2 w-2 rounded-full" style={{ backgroundColor: cfg.color }} />
               <span>{cfg.label}</span>
-              {isVisible ? <Eye className="h-3 w-3 text-slate-400 ml-0.5" /> : <EyeOff className="h-3 w-3 text-slate-400 ml-0.5" />}
+              {isVisible ? <Eye className="h-3 w-3 text-gray-400 ml-0.5" /> : <EyeOff className="h-3 w-3 text-gray-300 ml-0.5" />}
             </button>
           );
         })}
       </div>
 
       {/* Interactive SVG Chart Canvas */}
-      <div className="relative w-full overflow-hidden select-none">
+      <div className="relative w-full overflow-hidden select-none bg-gray-50/50 rounded-lg border border-gray-200 p-2">
         <svg
           ref={svgRef}
           viewBox={`0 0 ${width} ${height}`}
@@ -164,7 +165,7 @@ export function PriceTrendChart({ timeline = [], stats = null }) {
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
         >
-          {/* Horizontal Grid lines */}
+          {/* Horizontal Grid lines and Price Axis */}
           {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
             const y = paddingTop + ratio * chartHeight;
             const priceVal = Math.round(maxPrice - ratio * (maxPrice - minPrice));
@@ -175,7 +176,7 @@ export function PriceTrendChart({ timeline = [], stats = null }) {
                   y1={y}
                   x2={width - paddingRight}
                   y2={y}
-                  stroke="#f1f5f9"
+                  stroke="#E5E7EB"
                   strokeWidth="1"
                 />
                 <text
@@ -183,8 +184,8 @@ export function PriceTrendChart({ timeline = [], stats = null }) {
                   y={y + 3}
                   textAnchor="end"
                   fontSize="10"
-                  fill="#94a3b8"
-                  fontFamily="monospace"
+                  fill="#9CA3AF"
+                  fontFamily="Inter, sans-serif"
                 >
                   ₹{priceVal}
                 </text>
@@ -200,17 +201,17 @@ export function PriceTrendChart({ timeline = [], stats = null }) {
                 y1={getY(stats.averagePrice)}
                 x2={width - paddingRight}
                 y2={getY(stats.averagePrice)}
-                stroke="#cbd5e1"
+                stroke="#CBD5E1"
                 strokeWidth="1"
-                strokeDasharray="4 4"
+                strokeDasharray="3 3"
               />
               <text
                 x={width - paddingRight}
                 y={getY(stats.averagePrice) - 4}
                 textAnchor="end"
                 fontSize="9"
-                fill="#64748b"
-                fontWeight="bold"
+                fill="#94A3B8"
+                fontFamily="Inter, sans-serif"
               >
                 Avg: ₹{stats.averagePrice}
               </text>
@@ -247,9 +248,9 @@ export function PriceTrendChart({ timeline = [], stats = null }) {
                     x={getX(idx)}
                     y={height - 10}
                     textAnchor={idx === 0 ? 'start' : idx === filteredTimeline.length - 1 ? 'end' : 'middle'}
-                    fontSize="10"
-                    fill="#94a3b8"
-                    fontWeight="500"
+                    fontSize="9"
+                    fill="#9CA3AF"
+                    fontFamily="Inter, sans-serif"
                   >
                     {pt.label}
                   </text>
@@ -265,7 +266,7 @@ export function PriceTrendChart({ timeline = [], stats = null }) {
                 y1={paddingTop}
                 x2={getX(hoveredIndex)}
                 y2={paddingTop + chartHeight}
-                stroke="#0f172a"
+                stroke="#94A3B8"
                 strokeWidth="1.5"
                 strokeDasharray="3 3"
               />
@@ -290,15 +291,15 @@ export function PriceTrendChart({ timeline = [], stats = null }) {
         {/* Floating Tooltip card when hovered */}
         {hoveredIndex !== null && activePoint && (
           <div
-            className="absolute top-2 pointer-events-none rounded-2xl bg-slate-900/95 text-white p-3 shadow-xl backdrop-blur-md text-xs space-y-1.5 z-10 min-w-[170px]"
+            className="absolute top-2 pointer-events-none rounded-xl bg-gray-900/95 text-white p-3 shadow-lg text-xs space-y-1.5 z-10 min-w-[170px]"
             style={{
               left: `${Math.min(75, Math.max(5, (getX(hoveredIndex) / width) * 100))}%`,
               transform: 'translateX(-50%)'
             }}
           >
-            <div className="font-bold text-slate-300 border-b border-slate-800 pb-1 flex justify-between items-center">
+            <div className="font-semibold text-gray-200 border-b border-gray-700 pb-1 flex justify-between items-center">
               <span>{activePoint.label}</span>
-              <span className="text-[10px] text-emerald-400 font-normal">Low: ₹{activePoint.lowest}</span>
+              <span className="text-[11px] text-green-400 font-medium">Low: ₹{activePoint.lowest}</span>
             </div>
             <div className="space-y-1 pt-0.5">
               {Object.entries(PROVIDER_CONFIG).map(([key, cfg]) => {
@@ -306,12 +307,12 @@ export function PriceTrendChart({ timeline = [], stats = null }) {
                 const isLowest = activePoint[key] === activePoint.lowest;
                 return (
                   <div key={key} className="flex items-center justify-between gap-3 text-[11px]">
-                    <span className="flex items-center gap-1.5 text-slate-300">
+                    <span className="flex items-center gap-1.5 text-gray-300">
                       <span className="h-2 w-2 rounded-full" style={{ backgroundColor: cfg.color }} />
                       {cfg.label}:
                     </span>
-                    <span className={`font-mono font-semibold ${isLowest ? 'text-emerald-400' : 'text-slate-100'}`}>
-                      ₹{activePoint[key]} {isLowest && '⚡'}
+                    <span className={`font-semibold ${isLowest ? 'text-green-400' : 'text-gray-100'}`}>
+                      ₹{activePoint[key]} {isLowest && '(Lowest)'}
                     </span>
                   </div>
                 );
