@@ -21,6 +21,8 @@ export const productController = {
       category: category || null,
       pincode: pincode || null,
       cache: result.cache,
+      sanityRejected: result.sanityRejected || false,
+      rejectionReason: result.rejectionReason || null,
       page,
       limit,
       total: result.items.length,
