@@ -3,7 +3,18 @@ import { POPULAR_LOCATIONS } from '../utils/constants.js';
 
 const LocationContext = createContext();
 
-// Helper to calculate distance in km between two lat/lon coordinates
+// Default fallback to Hyderabad
+const HYDERABAD_DEFAULT = POPULAR_LOCATIONS.find((l) => l.pincode === '500001') || {
+  pincode: '500081',
+  city: 'Hyderabad',
+  area: 'Madhapur / HITEC City',
+  eta: '10 min',
+  lat: 17.4483,
+  lon: 78.3915,
+  hubCode: 'HYD_CORE_03'
+};
+
+// Calculate distance in km between two lat/lon coordinates
 function haversine(lat1, lon1, lat2, lon2) {
   const R = 6371; // km
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -23,12 +34,13 @@ export function LocationProvider({ children }) {
     } catch {
       // fallback
     }
-    return POPULAR_LOCATIONS[0];
+    return HYDERABAD_DEFAULT;
   });
 
   const [geoStatus, setGeoStatus] = useState('idle'); // 'idle' | 'detecting' | 'resolved' | 'denied' | 'error'
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Sync to localStorage
   useEffect(() => {
     try {
       localStorage.setItem('user_location', JSON.stringify(location));
@@ -37,7 +49,7 @@ export function LocationProvider({ children }) {
     }
   }, [location]);
 
-  // Request browser GPS position and map to closest dark store hub
+  // Request browser GPS position and map to closest quick commerce hub
   const detectBrowserLocation = () => {
     if (!navigator.geolocation) {
       setGeoStatus('error');
@@ -51,7 +63,7 @@ export function LocationProvider({ children }) {
         const { latitude, longitude } = pos.coords;
 
         // Find nearest known quick commerce hub
-        let closest = POPULAR_LOCATIONS[0];
+        let closest = HYDERABAD_DEFAULT;
         let minDistance = Infinity;
 
         for (const loc of POPULAR_LOCATIONS) {
@@ -80,9 +92,17 @@ export function LocationProvider({ children }) {
         console.warn('Geolocation failed or denied:', err.message);
         setGeoStatus(err.code === 1 ? 'denied' : 'error');
       },
-      { timeout: 10000, maximumAge: 60000 }
+      { timeout: 8000, maximumAge: 60000 }
     );
   };
+
+  // Automatically attempt browser geolocation on mount if not already GPS resolved
+  useEffect(() => {
+    const saved = localStorage.getItem('user_location');
+    if (!saved || !location.isGpsResolved) {
+      detectBrowserLocation();
+    }
+  }, []);
 
   const updateLocation = (newLoc) => {
     setLocation(newLoc);

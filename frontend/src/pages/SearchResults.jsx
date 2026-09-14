@@ -118,7 +118,16 @@ export function SearchResults() {
           </div>
         )}
 
-        {!loading && !error && items.length === 0 && (
+        {!loading && !error && meta?.sanityRejected && (
+          <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-8 text-center space-y-2">
+            <h3 className="text-sm font-semibold text-amber-900">Non-Grocery Query</h3>
+            <p className="text-xs text-amber-800/90 max-w-md mx-auto">
+              {meta.rejectionReason || `No grocery items found for "${query}". PriceRadar only compares supermarket & quick-commerce essentials.`}
+            </p>
+          </div>
+        )}
+
+        {!loading && !error && !meta?.sanityRejected && items.length === 0 && (
           <div className="rounded-xl border border-gray-200 bg-white p-12 text-center space-y-2">
             <h3 className="text-sm font-semibold text-gray-900">No products found</h3>
             <p className="text-xs text-gray-500 max-w-sm mx-auto">
